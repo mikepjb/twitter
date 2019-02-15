@@ -19,7 +19,7 @@
                             "count" n}
              :oauth-token btok}))
 
-(defn tweets [uname n btok]
+(defn timeline [uname n btok]
   "limit of n is 200 as a default"
   (let [tweets-response (user-statuses uname n btok)]
     (if (= 200 (:status tweets-response))
@@ -29,7 +29,20 @@
   (map #(select-keys % [:retweet_count :favourite_count :text :created_at])))
 
 ;; (def oauth (bearer-token "x" "y"))
-;; (def tweet-list (tweets "mikepjb" "200" (:access_token oauth)))
+(def tweet-list (timeline "mikepjb" "200" (:access_token oauth)))
 ;; (into [] select-relevant-fields tweet-list)
-;; (take 10 (reverse (sort-by :retweet_count (into [] select-relevant-fields ;tweet-list))))
+;; (take 10 (reverse (sort-by :retweet_count (into [] select-relevant-fields
+;; ;tweet-list))))
+
+(def fields [:id :retweet_count :favorite_count :text :created_at :screen_name])
+(defrecord Tweet [id retweet_count favorite_count text created_at screen_name])
+
+(defn tweet [e]
+  "takes element e and returns a tweet"
+  (map->Tweet (select-keys e fields)))
+
+(def tweets
+  (->> tweet-list
+       (map tweet)))
+
 
