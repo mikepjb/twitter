@@ -20,9 +20,16 @@
              :oauth-token btok}))
 
 (defn tweets [uname n btok]
+  "limit of n is 200 as a default"
   (let [tweets-response (user-statuses uname n btok)]
     (if (= 200 (:status tweets-response))
       (json/decode (:body tweets-response) keyword))))
 
+(def select-relevant-fields
+  (map #(select-keys % [:retweet_count :favourite_count :text :created_at])))
+
 ;; (def oauth (bearer-token "x" "y"))
-(def tweet-list (tweets "mikepjb" "5" (:access_token oauth)))
+;; (def tweet-list (tweets "mikepjb" "200" (:access_token oauth)))
+;; (into [] select-relevant-fields tweet-list)
+;; (take 10 (reverse (sort-by :retweet_count (into [] select-relevant-fields ;tweet-list))))
+
